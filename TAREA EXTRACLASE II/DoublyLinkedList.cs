@@ -250,8 +250,8 @@ namespace TAREA_EXTRACLASE_II
         public void Invert()
         {
             if (this.head == null)
-            { 
-                return; 
+            {
+                throw new ArgumentNullException("List can not be null");
             }
             Node? current = this.head;
             Node? temp = null;

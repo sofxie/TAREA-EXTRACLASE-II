@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TAREA_EXTRACLASE_II
 {
-    class Node
+    public class Node
     {
         public object data;
         public Node? next;
