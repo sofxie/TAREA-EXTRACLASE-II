@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TAREA_EXTRACLASE_II
 {
@@ -17,14 +18,16 @@ namespace TAREA_EXTRACLASE_II
     {
         public Node? head;
         public Node? last;
+        public Node? middle;
         public int size;
         public DoublyLinkedList()
         {
             this.head = null;
             this.last = null;
+            this.middle = null;
             this.size = 0;
         }
-        public Boolean IsEmpty()
+        public bool IsEmpty()
         {
             return this.head == null;
         }
@@ -40,6 +43,7 @@ namespace TAREA_EXTRACLASE_II
             {
                 this.head = newNode;
                 this.last = newNode;
+                this.middle = newNode;
                 newNode.next = null;
                 newNode.previous = null;
             }
@@ -73,7 +77,20 @@ namespace TAREA_EXTRACLASE_II
                 }
 
                 current.next = newNode;
-
+            }
+            if (this.size % 2 == 0)
+            {
+                if ((int)newNode.data < (int)this.middle.data)
+                {
+                    this.middle = this.middle.previous;
+                }
+            }
+            else
+            {
+                if ((int)newNode.data >= (int)this.middle.data)
+                {
+                    this.middle = this.middle.next;
+                }
             }
             this.size++;
         }
@@ -91,6 +108,10 @@ namespace TAREA_EXTRACLASE_II
                 else
                 {
                     this.last = null;
+                }
+                if (this.size % 2 == 1) 
+                {
+                    this.middle = this.middle?.next; 
                 }
 
                 this.size--;
@@ -113,8 +134,12 @@ namespace TAREA_EXTRACLASE_II
                 }
                 else
                 {
-                    this.last = this.last.previous;
+                    this.last = this.last?.previous;
                     this.last.next = null;
+                }
+                if (this.size % 2 == 1)
+                {
+                    this.middle = this.middle?.previous;
                 }
                 this.size--;
                 return temp;
@@ -137,49 +162,120 @@ namespace TAREA_EXTRACLASE_II
                 {
                     current = current.next;
                 }
-                if (current != null)
+                if (current == null)
                 {
                     return false;
                 }
                 if (current == this.head)
                 {
-                    this.head = current.next;
-                    if (this.head != null)
+                    return DeleteFirst() != null;
+                }
+                if (current == this.last)
+                {
+                    return DeleteLast() != null;
+                }
+                if (current == this.middle)
+                {
+                    if (this.size % 2 == 1)
                     {
-                        this.head.previous = null;
+                        this.middle = this.middle?.next;
                     }
                     else
                     {
-                        current.previous.next = current.next;
-                        if (current.next != null)
-                        {
-                            current.next.previous = current.previous;
-                        }
-                        else
-                        {
-                            this.last = current.previous;
-                        }
+                        this.middle = this.middle?.previous;
                     }
-                    this.last = null;
+                }
+                
+                if (current.previous != null)
+                {
+                    current.previous.next = current.next;
+                }
+                if (current.next != null)
+                {
+                    current.next.previous = current.previous;
+                }
+                this.size--;
+                return true;
                 }
             }
-            this.size--;
-            return true;
+        
+        // PROBLEMA #1: MEZCLAR EN ORDEN 
+        public static List<Node> MergeSorted(IList<Node> listA, IList<Node> listB, SortDirection direction)
+        {
+            if (listA == null || listB == null)
+            {
+                throw new ArgumentNullException("List can not be null");
+            }
+            List<Node> mergedList = new List<Node>();
+            int indexA = 0;
+            int indexB = 0;
+
+            while (indexA < listA.Count && indexB < listB.Count)
+            {
+                int comparisonResult = CompareNodes(listA[indexA], listB[indexB]);
+                bool shouldInsertA = direction == SortDirection.Asc ? comparisonResult <= 0 : comparisonResult >= 0;
+                if (shouldInsertA)
+                {
+                    mergedList.Add(listA[indexA]);
+                    indexA++;
+                }
+                else
+                {
+                    mergedList.Add(listB[indexB]);
+                    indexB++;
+                }
+            }
+            while (indexA < listA.Count)
+            {
+                mergedList.Add(listA[indexA]);
+                indexA++;
+            }
+
+            while (indexB < listB.Count)
+            {
+                mergedList.Add(listB[indexB]);
+                indexB++;
+            }
+            return mergedList;
         }
+        private static int CompareNodes(Node nodeA, Node nodeB)
+        {
+           
+            return ((int)nodeA.data).CompareTo((int)nodeB.data);
+        }
+
+
+        // PROBLEMA #2: INVERTIR LISTA
+
+        public void Invert()
+        {
+            if (this.head == null)
+            { 
+                return; 
+            }
+            Node? current = this.head;
+            Node? temp = null;
+            while (current != null)
+            {
+                temp = current.previous;
+                current.previous = current.next;
+                current.next = temp;
+                current = current.previous;
+            }
+            if (temp != null)
+            {
+                this.head = temp.previous;
+            }
+        }
+
+        // PROBLEMA #3: OBTENER EL ELEMENTO CENTRAL
         public int? GetMiddle()
         {
             if (this.IsEmpty())
             {
-                return null;
+                throw new InvalidOperationException("Empty list."); ;
             }
-            int middlePosition = this.size / 2;
-            Node? current = this.head;
-
-            for (int i = 0; i < middlePosition; i++)
-            {
-                current = current.next;
-            }
-            return (int?) current?.data;
+            return (int)this.middle?.data;
         }
     }
 }
