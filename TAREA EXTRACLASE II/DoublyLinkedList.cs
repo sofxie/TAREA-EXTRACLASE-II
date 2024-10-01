@@ -14,7 +14,7 @@ namespace TAREA_EXTRACLASE_II
         Asc,
         Desc
     }
-    class DoublyLinkedList
+    public class DoublyLinkedList
     {
         public Node? head;
         public Node? last;

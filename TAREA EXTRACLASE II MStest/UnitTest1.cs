@@ -7,7 +7,7 @@ namespace TAREA_EXTRACLASE_II_MStest
     [TestClass]
     public class MergeSortedTests
     {
-        [TestMethod] 
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void MergeSorted_WithNullListA_ThrowsArgumentNullException()
         {
@@ -55,8 +55,8 @@ namespace TAREA_EXTRACLASE_II_MStest
         public void MergeSorted_WithDescendingDirection_ReturnsMergedListInDescendingOrder()
         {
             // Arrange
-            IList<Node> listA = new List<Node> { new Node(1), new Node(3), new Node(5) };
-            IList<Node> listB = new List<Node> { new Node(2), new Node(4), new Node(6) };
+            IList<Node> listA = new List<Node> { new Node(5), new Node(4), new Node(2) };
+            IList<Node> listB = new List<Node> { new Node(6), new Node(3), new Node(1) };
 
             // Act
             List<Node> result = MergeSorted(listA, listB, SortDirection.Desc);
@@ -115,5 +115,85 @@ namespace TAREA_EXTRACLASE_II_MStest
         {
             return ((int)nodeA.data).CompareTo((int)nodeB.data);
         }
+        [TestMethod]
+        public void Invert_WithSingleNode_HeadRemainsSame()
+        {
+            var list = new DoublyLinkedList();
+            list.head = new Node(1);
+
+            list.Invert();
+
+            Assert.AreEqual(1, list.head.data);
+            Assert.IsNull(list.head.next);
+            Assert.IsNull(list.head.previous);
+        }
+
+        [TestMethod]
+        public void Invert_WithMultipleNodes_HeadChangesCorrectly()
+        {
+            var list = new DoublyLinkedList();
+            list.head = new Node(1);
+            Node second = new Node(2);
+            Node third = new Node(3);
+            list.head.next = second;
+            second.previous = list.head;
+            second.next = third;
+            third.previous = second;
+
+            list.Invert();
+
+            Assert.AreEqual(3, list.head.data);
+            Assert.AreEqual(2, list.head.next.data);
+            Assert.AreEqual(1, list.head.next.next.data);
+            Assert.IsNull(list.head.next.next.next);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Invert_WithEmptyList_ThrowsArgumentNullException()
+        {
+            var list = new DoublyLinkedList(); // head is null by default
+            list.Invert();
+        }
+
+        [TestMethod]
+        public void GetMiddle_WithSingleNode_ReturnsSameNode()
+        {
+            var list = new DoublyLinkedList();
+            list.head = new Node(1);
+            list.middle = list.head; // Set middle
+
+            var result = list.GetMiddle();
+
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void GetMiddle_WithThreeNodes_ReturnsMiddleNode()
+        {
+            var list = new DoublyLinkedList();
+            list.head = new Node(1);
+            Node second = new Node(2);
+            Node third = new Node(3);
+            list.head.next = second;
+            second.previous = list.head;
+            second.next = third;
+            third.previous = second;
+            list.middle = second; // Set middle
+
+            var result = list.GetMiddle();
+
+            Assert.AreEqual(2, result);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void GetMiddle_WithEmptyList_ThrowsInvalidOperationException()
+        {
+            var list = new DoublyLinkedList();
+            list.GetMiddle();
+        }
     }
 }
+
+
